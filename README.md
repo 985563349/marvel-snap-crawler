@@ -1,3 +1,3 @@
 # Marvel Snap Crawler
 
-[MarvelSnap](https://marvelsnap.io/) Data crawler.
+[Marvel Snap Zone](https://marvelsnapzone.com) Data crawler.
