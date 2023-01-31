@@ -1,5 +1,5 @@
 {
-  "name": "marvel-snap-book-server",
+  "name": "marvel-snap-crawler",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
