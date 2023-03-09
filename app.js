@@ -3,6 +3,7 @@ const Router = require('@koa/router');
 const cors = require('@koa/cors');
 const request = require('superagent');
 const cheerio = require('cheerio');
+const { pick, snakeCase } = require('lodash');
 
 const app = new Koa();
 const router = new Router();
@@ -28,6 +29,7 @@ router.get('/api/cards', async (ctx) => {
 
 router.get('/api/cards/:id', async (ctx) => {
   const { id } = ctx.params;
+  const { cid } = ctx.query;
 
   const response = await request.get(`https://marvelsnapzone.com/cards/${id}`);
   const $ = cheerio.load(response.text);
@@ -40,15 +42,6 @@ router.get('/api/cards/:id', async (ctx) => {
     .match(/https:\/\/.*$/)[0];
   data.cost = $('.content-right .cost').text();
   data.power = $('.content-right .power').text();
-
-  data.variant_images = $('.card-variants .variant img')
-    .map(
-      (_, elem) =>
-        $(elem)
-          .data('src')
-          .match(/https:\/\/.*$/)[0]
-    )
-    .get();
 
   $('.content-right .name-line').each((_, elem) => {
     const key = $('.name', elem).text().toLowerCase();
@@ -71,6 +64,31 @@ router.get('/api/cards/:id', async (ctx) => {
         break;
     }
   });
+
+  $('.card-detail-stats .item').each((_, elem) => {
+    const key = $('.item-name', elem).text().toLowerCase();
+    data[snakeCase(key)] = $('.item-value', elem).text();
+  });
+
+  data.variant_images = $('.card-variants .variant img')
+    .map(
+      (_, elem) =>
+        $(elem)
+          .data('src')
+          .match(/https:\/\/.*$/)[0]
+    )
+    .get();
+  
+  if (cid != null) {
+    const { text } = await request.get('https://marvelsnapzone.com/getinfo').query({ cid, getrelateddeckscard: true});
+
+    const desks = JSON.parse(text).success.map((item) => ({
+      info: pick(item.info, ['name', 'code', 'lastup']),
+      cards: item.decklist?.cards,
+    }));
+
+    data.desks = desks;
+  }
 
   ctx.body = data;
 });

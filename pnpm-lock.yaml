@@ -5,6 +5,7 @@ specifiers:
   '@koa/router': ^12.0.0
   cheerio: 1.0.0-rc.12
   koa: ^2.14.1
+  lodash: ^4.17.21
   nodemon: ^2.0.20
   superagent: ^8.0.9
 
@@ -13,6 +14,7 @@ dependencies:
   '@koa/router': 12.0.0
   cheerio: 1.0.0-rc.12
   koa: 2.14.1
+  lodash: 4.17.21
   superagent: 8.0.9
 
 devDependencies:
@@ -525,6 +527,10 @@ packages:
       vary: 1.1.2
     transitivePeerDependencies:
       - supports-color
+    dev: false
+
+  /lodash/4.17.21:
+    resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
     dev: false
 
   /lru-cache/6.0.0:
