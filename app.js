@@ -29,7 +29,6 @@ router.get('/api/cards', async (ctx) => {
 
 router.get('/api/cards/:id', async (ctx) => {
   const { id } = ctx.params;
-  const { cid } = ctx.query;
 
   const response = await request.get(`https://marvelsnapzone.com/cards/${id}`);
   const $ = cheerio.load(response.text);
@@ -78,31 +77,35 @@ router.get('/api/cards/:id', async (ctx) => {
           .match(/https:\/\/.*$/)[0]
     )
     .get();
-  
-  if (cid != null) {
-    const { text } = await request.get('https://marvelsnapzone.com/getinfo').query({ cid, getrelateddeckscard: true});
 
-    const desks = JSON.parse(text).success.map((item) => ({
-      info: pick(item.info, ['name', 'code', 'lastup']),
-      cards: item.decklist?.cards,
-    }));
+  ctx.body = data;
+});
 
-    data.desks = desks;
-  }
+router.get('/api/cards/:cid/decks', async (ctx) => {
+  const { cid } = ctx.params;
+
+  const { text } = await request
+    .get('https://marvelsnapzone.com/getinfo')
+    .query({ cid, getrelateddeckscard: true });
+
+  const data = JSON.parse(text).success.map((item) => ({
+    info: pick(item.info, ['name', 'code', 'lastup']),
+    cards: item.decklist?.cards,
+  }));
 
   ctx.body = data;
 });
 
 router.get('/api/decks', async (ctx) => {
-  const { nextpage } = ctx.query;
+  const { nextpage, abilities, sources } = ctx.query;
 
   const query = {
     searchdecks: true,
     tags: [],
     cardtags: [],
     deckname: '',
-    abilities: [],
-    sources: [],
+    abilities: [abilities],
+    sources: [sources],
     cards: [],
     collection: [],
     onlywithlikes: 0,
