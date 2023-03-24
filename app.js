@@ -74,7 +74,7 @@ router.get('/api/cards/:id', async (ctx) => {
       (_, elem) =>
         $(elem)
           .data('src')
-          .match(/https:\/\/.*$/)[0]
+          ?.match(/https:\/\/.*$/)[0]
     )
     .get();
 
