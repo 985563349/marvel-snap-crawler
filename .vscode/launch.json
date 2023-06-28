@@ -7,7 +7,7 @@
     {
       "name": "Launch Program",
       "request": "launch",
-      "runtimeArgs": ["dev"],
+      "runtimeArgs": ["start:dev"],
       "runtimeExecutable": "pnpm",
       "skipFiles": ["<node_internals>/**"],
       "type": "node",

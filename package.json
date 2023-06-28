@@ -2,10 +2,9 @@
   "name": "marvel-snap-crawler",
   "version": "1.0.0",
   "description": "marvel snap crawler",
-  "main": "app.js",
   "scripts": {
-    "dev": "nodemon ./app.js",
-    "build": "node ./app.js"
+    "start": "node ./src/index.js",
+    "start:dev": "nodemon ./src/index.js"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +16,8 @@
     "cheerio": "1.0.0-rc.12",
     "koa": "^2.14.1",
     "lodash": "^4.17.21",
+    "mongoose": "^7.3.1",
+    "node-schedule": "^2.1.1",
     "superagent": "^8.0.9"
   },
   "devDependencies": {
