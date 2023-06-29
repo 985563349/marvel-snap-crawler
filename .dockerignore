@@ -3,6 +3,7 @@
 pnpm-debug.log*
 README.md
 
+logs
 node_modules
 
 # Editor directories and files

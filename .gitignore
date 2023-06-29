@@ -1,2 +1,9 @@
-/node_modules
+# Logs
+*.log
+pnpm-debug.log*
+
+logs
+node_modules
+
+# Editor directories and files
 .DS_Store

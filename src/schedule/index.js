@@ -2,8 +2,9 @@ const schedule = require('node-schedule');
 const request = require('superagent');
 const cheerio = require('cheerio');
 const { pick, snakeCase, kebabCase, random } = require('lodash');
-const { stringify, sleep } = require('../utils');
 const AppDataSource = require('../app-data-source');
+const logger = require('../lib/logger');
+const { stringify, sleep } = require('../utils');
 
 const Card = AppDataSource.model('Card');
 const CardProFile = AppDataSource.model('CardProFile');
@@ -18,6 +19,8 @@ const crawlingCards = async () => {
 };
 
 const writeCards = async () => {
+  logger.info('crawl card job started');
+
   const cards = await crawlingCards();
 
   const operations = cards.map((card) => ({
@@ -28,7 +31,12 @@ const writeCards = async () => {
     },
   }));
 
-  return Card.bulkWrite(operations);
+  const result = await Card.bulkWrite(operations);
+
+  logger.info(
+    `inserted: ${result.insertedCount}, modified: ${result.modifiedCount}, deleted: ${result.deletedCount}, matched: ${result.matchedCount}`
+  );
+  logger.info('crawl card job completed');
 };
 
 const crawlingCardProFile = async (id) => {
@@ -71,17 +79,19 @@ const crawlingCardProFile = async (id) => {
 };
 
 const writeCardProFile = async () => {
+  logger.info('crawl card pro file job started');
+
   const cards = await Card.find();
   const cardProFiles = [];
 
   for (let i = 0; i < cards.length; i++) {
     try {
       const cardProFile = await crawlingCardProFile(kebabCase(cards[i].name));
-      Object.assign(cardProFile, pick(cards[i], ['cid', 'name']));
+      Object.assign(cardProFile, pick(['cid', 'name'], cards[i]));
       cardProFiles.push(cardProFile);
       await sleep(random(500, 1000)); // random delay of 0.5 to 1 second.
     } catch (error) {
-      console.log(error);
+      logger.error(error);
     }
   }
 
@@ -93,7 +103,12 @@ const writeCardProFile = async () => {
     },
   }));
 
-  return CardProFile.bulkWrite(operations);
+  const result = await CardProFile.bulkWrite(operations);
+
+  logger.info(
+    `inserted: ${result.insertedCount}, modified: ${result.modifiedCount}, deleted: ${result.deletedCount}, matched: ${result.matchedCount}`
+  );
+  logger.info('crawl card pro file job completed');
 };
 
 const crawlingDecks = async (nextpage) => {
@@ -126,6 +141,8 @@ const crawlingDecks = async (nextpage) => {
 };
 
 const writeDecks = async () => {
+  logger.info('crawl deck job started');
+
   const limit = 1000;
   let currentPage = 0;
   let cacheQueue = [];
@@ -140,10 +157,11 @@ const writeDecks = async () => {
     }));
 
     cacheQueue = [];
-    await Deck.bulkWrite(operations);
+    const result = await Deck.bulkWrite(operations);
+    bulkWriteResults.push(result);
   };
 
-  while (true && currentPage < 3) {
+  while (true) {
     try {
       const decks = await crawlingDecks(currentPage);
 
@@ -159,33 +177,31 @@ const writeDecks = async () => {
       await sleep(random(500, 1000)); // random delay of 0.5 to 1 second.
       currentPage++;
     } catch (error) {
-      console.log(error);
+      logger.error(error);
     }
   }
 
   if (cacheQueue.length) {
     await write();
   }
+
+  logger.info('crawl deck job completed');
 };
 
 const scheduleJob = async () => {
   // execute tasks at two o'clock every day
   return schedule.scheduleJob('0 2 * * *', async () => {
-    console.log('crawling job started \n');
+    logger.info('crawling job started');
 
-    console.log('crawl card job started');
-    await writeCards();
-    console.log('crawl card job completed \n');
+    try {
+      await writeCards();
+      await writeCardProFile();
+      await writeDecks();
+    } catch (error) {
+      logger.error(error);
+    }
 
-    console.log('crawl card pro file job started');
-    await writeCardProFile();
-    console.log('crawl card pro file job completed \n');
-
-    console.log('crawl deck job started');
-    await writeDecks();
-    console.log('crawl deck job completed \n');
-
-    console.log('crawling job completed');
+    logger.info('crawling job completed');
   });
 };
 

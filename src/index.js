@@ -1,6 +1,7 @@
 const Koa = require('koa');
 const cors = require('@koa/cors');
 const AppDataSource = require('./app-data-source');
+const logger = require('./lib/logger');
 
 AppDataSource.initialize()
   .then(async () => {
@@ -16,5 +17,5 @@ AppDataSource.initialize()
     require('./schedule').scheduleJob();
   })
   .catch((error) => {
-    console.log(error);
+    logger.error(error);
   });
