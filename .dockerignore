@@ -1,0 +1,11 @@
+# Logs
+*.log
+pnpm-debug.log*
+README.md
+
+node_modules
+
+# Editor directories and files
+.vscode/*
+.git
+.DS_Store
