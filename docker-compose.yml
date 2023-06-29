@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  crawler-app:
+    build: .
+    restart: 'always'
+    depends_on:
+      - mongo-container
+    ports:
+      - '3000:3000'
+
+  mongo-container:
+    image: 'mongo'
+    volumes:
+      - '/Users/cti/Development/mongo:/data/db'
