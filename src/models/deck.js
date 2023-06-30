@@ -7,6 +7,7 @@ const deckSchema = mongoose.Schema(
     lastup: Number,
     code: String,
     cards: [{ cid: Number, name: String, art: String }],
+    updated: { type: Date, default: Date.now },
   },
   { collection: 'decks' }
 );

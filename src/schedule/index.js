@@ -31,10 +31,13 @@ const writeCards = async () => {
     },
   }));
 
-  const result = await Card.bulkWrite(operations);
+  const { upsertedCount, modifiedCount, matchedCount } = await Card.bulkWrite(operations);
+  const { deletedCount } = await Card.deleteMany({
+    updated: { $lt: new Date().setHours(0, 0, 0, 0) },
+  });
 
   logger.info(
-    `upserted: ${result.upsertedCount}, modified: ${result.modifiedCount}, matched: ${result.matchedCount}`
+    `upserted: ${upsertedCount}, modified: ${modifiedCount}, deleted: ${deletedCount}, matched: ${matchedCount}`
   );
   logger.info('crawl card job completed\n');
 };
@@ -103,10 +106,13 @@ const writeCardProFile = async () => {
     },
   }));
 
-  const result = await CardProFile.bulkWrite(operations);
+  const { upsertedCount, modifiedCount, matchedCount } = await CardProFile.bulkWrite(operations);
+  const { deletedCount } = await CardProFile.deleteMany({
+    updated: { $lt: new Date().setHours(0, 0, 0, 0) },
+  });
 
   logger.info(
-    `upserted: ${result.upsertedCount}, modified: ${result.modifiedCount}, matched: ${result.matchedCount}`
+    `upserted: ${upsertedCount}, modified: ${modifiedCount}, deleted: ${deletedCount}, matched: ${matchedCount}`
   );
   logger.info('crawl card pro file job completed\n');
 };
@@ -147,6 +153,10 @@ const writeDecks = async () => {
   let currentPage = 0;
   let cacheQueue = [];
 
+  let upsertedCount = 0;
+  let modifiedCount = 0;
+  let matchedCount = 0;
+
   const write = async () => {
     const operations = cacheQueue.map((deck) => ({
       updateOne: {
@@ -158,9 +168,9 @@ const writeDecks = async () => {
 
     cacheQueue = [];
     const result = await Deck.bulkWrite(operations);
-    logger.info(
-      `upserted: ${result.upsertedCount}, modified: ${result.modifiedCount}, matched: ${result.matchedCount}`
-    );
+    upsertedCount += result.upsertedCount;
+    modifiedCount += result.modifiedCount;
+    matchedCount += result.matchedCount;
   };
 
   while (true) {
@@ -187,6 +197,13 @@ const writeDecks = async () => {
     await write();
   }
 
+  const { deletedCount } = await Deck.deleteMany({
+    updated: { $lt: new Date().setHours(0, 0, 0, 0) },
+  });
+
+  logger.info(
+    `upserted: ${upsertedCount}, modified: ${modifiedCount}, deleted: ${deletedCount}, matched: ${matchedCount}`
+  );
   logger.info('crawl deck job completed\n');
 };
 

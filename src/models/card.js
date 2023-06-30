@@ -11,6 +11,7 @@ const cardSchema = new Schema(
     art: String,
     source: String,
     status: String,
+    updated: { type: Date, default: Date.now },
   },
   { collection: 'cards' }
 );
