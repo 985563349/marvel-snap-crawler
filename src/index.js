@@ -10,7 +10,7 @@ AppDataSource.initialize()
     app.use(cors()).use(require('./router').routes());
 
     app.listen(3000, () => {
-      console.log('Koa server has started on port 3008. Open http://localhost:3000 to see results');
+      console.log('Koa server has started on port 3000. Open http://localhost:3000 to see results');
     });
 
     // crawling job running...

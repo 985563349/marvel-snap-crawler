@@ -34,9 +34,9 @@ const writeCards = async () => {
   const result = await Card.bulkWrite(operations);
 
   logger.info(
-    `inserted: ${result.insertedCount}, modified: ${result.modifiedCount}, deleted: ${result.deletedCount}, matched: ${result.matchedCount}`
+    `upserted: ${result.upsertedCount}, modified: ${result.modifiedCount}, matched: ${result.matchedCount}`
   );
-  logger.info('crawl card job completed');
+  logger.info('crawl card job completed\n');
 };
 
 const crawlingCardProFile = async (id) => {
@@ -87,7 +87,7 @@ const writeCardProFile = async () => {
   for (let i = 0; i < cards.length; i++) {
     try {
       const cardProFile = await crawlingCardProFile(kebabCase(cards[i].name));
-      Object.assign(cardProFile, pick(['cid', 'name'], cards[i]));
+      Object.assign(cardProFile, pick(cards[i], ['cid', 'name']));
       cardProFiles.push(cardProFile);
       await sleep(random(500, 1000)); // random delay of 0.5 to 1 second.
     } catch (error) {
@@ -106,9 +106,9 @@ const writeCardProFile = async () => {
   const result = await CardProFile.bulkWrite(operations);
 
   logger.info(
-    `inserted: ${result.insertedCount}, modified: ${result.modifiedCount}, deleted: ${result.deletedCount}, matched: ${result.matchedCount}`
+    `upserted: ${result.upsertedCount}, modified: ${result.modifiedCount}, matched: ${result.matchedCount}`
   );
-  logger.info('crawl card pro file job completed');
+  logger.info('crawl card pro file job completed\n');
 };
 
 const crawlingDecks = async (nextpage) => {
@@ -158,7 +158,9 @@ const writeDecks = async () => {
 
     cacheQueue = [];
     const result = await Deck.bulkWrite(operations);
-    bulkWriteResults.push(result);
+    logger.info(
+      `upserted: ${result.upsertedCount}, modified: ${result.modifiedCount}, matched: ${result.matchedCount}`
+    );
   };
 
   while (true) {
@@ -185,12 +187,12 @@ const writeDecks = async () => {
     await write();
   }
 
-  logger.info('crawl deck job completed');
+  logger.info('crawl deck job completed\n');
 };
 
 const scheduleJob = async () => {
   // execute tasks at two o'clock every day
-  return schedule.scheduleJob('0 2 * * *', async () => {
+  return schedule.scheduleJob('0 0 2 * * ?', async () => {
     logger.info('crawling job started');
 
     try {
