@@ -1,6 +1,11 @@
 FROM node:18-alpine3.14
 WORKDIR /app
 
+ENV TZ=Asia/Shanghai
+
+RUN apk add --no-cache tzdata
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
 RUN npm install pnpm --global
 
 # pnpm fetch does require only lockfile
