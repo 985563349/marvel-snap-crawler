@@ -10,5 +10,6 @@ services:
 
   mongo-container:
     image: mongo
+    restart: always
     volumes:
       - /Users/cti/Development/mongo:/data/db
