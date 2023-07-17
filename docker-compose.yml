@@ -4,11 +4,11 @@ services:
     build: .
     restart: always
     depends_on:
-      - mongo-container
+      - crawler-mongo
     ports:
       - '3000:3000'
 
-  mongo-container:
+  crawler-mongo:
     image: mongo
     restart: always
     volumes:

@@ -15,9 +15,11 @@ const cardProFileSchema = Schema(
     total_meta_share: String,
     win_rate_on_draw: String,
     win_rate_on_play: String,
-    updated: { type: Date, default: Date.now },
   },
-  { collection: 'card_pro_files' }
+  {
+    collection: 'card_pro_files',
+    timestamps: { createdAt: false, updatedAt: 'updated' },
+  }
 );
 
 cardProFileSchema.name = 'CardProFile';

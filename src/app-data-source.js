@@ -4,7 +4,7 @@ const CardProFile = require('./models/card-pro-file');
 const Deck = require('./models/deck');
 
 const AppDataSource = new DataSource({
-  url: 'mongodb://mongo-container:27017/marvel_snap',
+  url: 'mongodb://crawler-mongo:27017/marvel_snap',
   synchronize: true,
   schemas: [Card, CardProFile, Deck],
 });

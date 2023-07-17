@@ -14,7 +14,7 @@ const logger = createLogger({
     new transports.DailyRotateFile({
       level: 'info',
       filename: 'logs/%DATE%.log',
-      datePattern: 'YYYY-MM-DD-HH',
+      datePattern: 'YYYY-MM-DD',
       maxSize: '20m',
       maxFiles: '7d',
     }),

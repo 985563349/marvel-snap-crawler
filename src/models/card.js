@@ -11,9 +11,11 @@ const cardSchema = new Schema(
     art: String,
     source: String,
     status: String,
-    updated: { type: Date, default: Date.now },
   },
-  { collection: 'cards' }
+  {
+    collection: 'cards',
+    timestamps: { createdAt: false, updatedAt: 'updated' },
+  }
 );
 
 cardSchema.name = 'Card';
